@@ -29,9 +29,9 @@ jobs:
           draft: false
           prerelease: true
           
-    - uses: montudor/action-zip@v0.1.0
-      with:
-        args: zip -qq -r net472.zip bin\Release\net472
+    - name: Compress Release
+      run: Compress-Archive -Path bin\Release\net472\* -DestinationPath net472.zip
+    
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1.0.2
       env:
