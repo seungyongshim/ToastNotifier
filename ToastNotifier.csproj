@@ -4,7 +4,7 @@
     <TargetFramework>net472</TargetFramework>
     <ExtrasEnableWpfProjectSetup>true</ExtrasEnableWpfProjectSetup>
     <UseWPF>true</UseWPF>
-    <Version>VERSION_INFO_HERE</Version>
+    <Version>v0.0.0.0</Version>
     <ApplicationIcon />
     <StartupObject />
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
