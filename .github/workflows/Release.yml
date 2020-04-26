@@ -18,24 +18,13 @@ jobs:
       env:
         TAG_NAME: ${{ github.ref }}
       run: |
-        $TAG_NAME -replace '(/refs/tags/v)', ''
-        get-childitem ./ -recurse -include *.csproj | ForEach-Object {(get-content -encoding utf8 $_.FullName) -replace 'VERSION_INFO_HERE', ($TAG_NAME -replace '(/refs/tags/v)', '') | out-file -encoding utf8 $_.FullName}
+        $env:TAG_NAME -replace '(/refs/tags/v)', ''
+        get-childitem ./ -recurse -include *.csproj | ForEach-Object {(get-content -encoding utf8 $_.FullName) -replace 'VERSION_INFO_HERE', ($env:TAG_NAME -replace '(/refs/tags/v)', '') | out-file -encoding utf8 $_.FullName}
         type ./ToastNotifier.csproj
     - name: Install dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: true
-          
+      run: dotnet build --configuration Release --no-restore          
     - name: Compress Release
       run: Compress-Archive -Path bin\Release\net472\* -DestinationPath net472.zip
     
