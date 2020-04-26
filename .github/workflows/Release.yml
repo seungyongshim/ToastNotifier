@@ -19,7 +19,7 @@ jobs:
         TAG_NAME: ${{ github.ref }}
       run: |
         env
-        get-childitem ./ -recurse -include *.csproj | ForEach-Object {(get-content -encoding utf8 $_.FullName) -replace 'VERSION_INFO_HERE', $TAG_NAME | out-file -encoding utf8 $_.FullName}
+        get-childitem ./ -recurse -include *.csproj | ForEach-Object {(get-content -encoding utf8 $_.FullName) -replace 'VERSION_INFO_HERE', ${GITHUB_REF##*/} | out-file -encoding utf8 $_.FullName}
     - name: Install dependencies
       run: dotnet restore
     - name: Build
