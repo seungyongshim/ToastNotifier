@@ -19,8 +19,8 @@ jobs:
         TAG_NAME: ${{ github.ref }}
       run: |
         echo $env:TAG_NAME
-        echo ($env:TAG_NAME -replace '/refs/tags/v', '')
-        get-childitem ./ -recurse -include *.csproj | ForEach-Object {(get-content -encoding utf8 $_.FullName) -replace 'VERSION_INFO_HERE', ($env:TAG_NAME -replace '/refs/tags/v', '') | out-file -encoding utf8 $_.FullName}
+        echo ($env:TAG_NAME -replace 'refs/tags/v', '')
+        get-childitem ./ -recurse -include *.csproj | ForEach-Object {(get-content -encoding utf8 $_.FullName) -replace 'VERSION_INFO_HERE', ($env:TAG_NAME -replace 'refs/tags/v', '') | out-file -encoding utf8 $_.FullName}
         type ./ToastNotifier.csproj
     - name: Install dependencies
       run: dotnet restore
