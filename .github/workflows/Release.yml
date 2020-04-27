@@ -30,7 +30,7 @@ jobs:
       run: Compress-Archive -Path bin\Release\net472\* -DestinationPath net472.zip
     - name: Get Release
       id: get
-      uses: bruceadams/get-release@v1
+      uses: bruceadams/get-release@v1.2.0
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1.0.2
       env:
