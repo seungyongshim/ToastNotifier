@@ -44,6 +44,8 @@ namespace BLUECATS.ToastNotifier.Actors
                 
                 BecomeStacked(Delaying);
             });
+
+            Receive<string>(m => notifier.ShowError(m));
         }
 
         private void Delaying()
