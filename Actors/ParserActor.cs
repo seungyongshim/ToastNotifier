@@ -37,25 +37,76 @@ namespace BLUECATS.ToastNotifier.Actors
                     DateTimeZoneHandling = DateTimeZoneHandling.Local,
                 });
 
-                string localtime = json["@timestamp"].ToString("yyyy-MM-dd HH:mm:ss")+"("+ json["@timestamp"].ToString("ddd")+ ")";
-                string title = "[" + json.jsonMessage["site"] + "]" + Regex.Replace(json.jsonMessage["product_names"].ToString(), @"[|\n|\r|\s]", string.Empty)
-                                + System.Environment.NewLine + json.jsonMessage["monitor_name"] + ": "+json.jsonMessage["trigger"];
-                string summary = Regex.Replace(json.jsonMessage["host"].ToString(), @"[|\n|\r|\s]", string.Empty);
+                var level = json.jsonMessage["severity"].ToString();
+                if (!CheckAuthority(level))
+                    return;
+
+                string localtime = json["@timestamp"].ToString("yyyy-MM-dd HH:mm:ss") + "(" + json["@timestamp"].ToString("ddd") + ")";
+                string title = System.Environment.NewLine + json.jsonMessage["monitor_name"] + ": " + json.jsonMessage["trigger_name"];
+                string hosts = GetHosts(json.jsonMessage["host_name"].Value);
 
                 var sb = new StringBuilder();
-                StringBuilder message = sb.AppendLine(string.Format($"{localtime}"))
+                StringBuilder message = sb.AppendLine(string.Format($"[{level}] {localtime}"))
                     .AppendLine(title)
-                    .AppendLine("[Summary] " + summary);
+                    .AppendLine(hosts);
 
                 string sendMsg = message.ToString();
                 if (sendMsg.Length > msgLength)
                     sendMsg = string.Concat(message.ToString().Remove(msgLength), "...");
-     
+
                 notificationActor.Tell(
-                    ((NotificationLevel)Enum.Parse(typeof(NotificationLevel), json.jsonMessage["severity"].ToString(), true), sendMsg)
+                    ((NotificationLevel)Enum.Parse(typeof(NotificationLevel), GetSeverity(level), true), sendMsg)
                 );
             });
+        }
 
+        private bool CheckAuthority(string level)
+        {
+            var authority = AkkaHelper.ReadConfigurationFromHoconFile(Assembly.GetExecutingAssembly(), "conf")
+                            .WithFallback(ConfigurationFactory
+                            .FromResource<ConsumerSettings<object, object>>("Akka.Streams.Kafka.reference.conf"))
+                            .GetInt("ui.notification.authority-level");
+
+            if (authority < Int32.Parse(level))
+                return false;
+
+            return true;
+        }
+
+        private string GetHosts(string value)
+        {
+            if (value == "{}")
+                return "테스트 입니다.";
+            var hosts = value.Trim('{', '}').Split(',').Select(x => x.Split('=')).ToDictionary(x => x[0], x => x[1]);
+            return string.Join(", ", hosts.Select(x => x.Value));
+        }
+
+        private string GetSeverity(string severtityLevel)
+        {
+            var severity = string.Empty;
+            switch (severtityLevel)
+            {
+                case "1":
+                    severity = NotificationLevel.Alert_Level1.ToString();
+                    break;
+                case "2":
+                    severity = NotificationLevel.Alert_Level2.ToString();
+                    break;
+                case "3":
+                    severity = NotificationLevel.Alert_Level3.ToString();
+                    break;
+                case "4":
+                    severity = NotificationLevel.Alert_Level4.ToString();
+                    break;
+                case "5":
+                    severity = NotificationLevel.Alert_Level5.ToString();
+                    break;
+                default:
+                    severity = NotificationLevel.Error.ToString();
+                    break;
+            }
+
+            return severity;
         }
     }
 }

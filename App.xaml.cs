@@ -156,9 +156,13 @@ namespace BLUECATS.ToastNotifier
             NotifyIcon.ContextMenu = menu;
             NotifyIcon.Visible = true;
 
-            
-            menu.MenuItems.Add(_version).Enabled = false;
-            
+            var authority = AkkaHelper.ReadConfigurationFromHoconFile(Assembly.GetExecutingAssembly(), "conf")
+                                        .WithFallback(ConfigurationFactory
+                                        .FromResource<ConsumerSettings<object, object>>("Akka.Streams.Kafka.reference.conf"))
+                                        .GetInt("ui.notification.authority-level");
+
+            menu.MenuItems.Add($"{_version} [{authority}]").Enabled = false;
+
             menu.MenuItems.Add(new System.Windows.Forms.MenuItem(@"&BLUE CATS",
                 onClick: (_, __) =>
                 {
