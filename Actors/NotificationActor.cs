@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ToastNotifications;
 using ToastNotifications.Lifetime.Clear;
 using ToastNotifications.Messages;
+using ToastNotifier.CustomNotificationMessage;
 
 namespace BLUECATS.ToastNotifier.Actors
 {
@@ -38,7 +39,7 @@ namespace BLUECATS.ToastNotifier.Actors
                         notifier.ShowWarning(msg);
                         break;
                     case NotificationLevel.Error:
-                        notifier.ShowError(msg);
+                        notifier.ShowCustomMessage(msg);
                         break;
                 }
                 
