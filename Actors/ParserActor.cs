@@ -37,11 +37,13 @@ namespace BLUECATS.ToastNotifier.Actors
                     DateTimeZoneHandling = DateTimeZoneHandling.Local,
                 });
 
+                var level = json.jsonMessage["severity"].ToString();
+                if (!CheckAuthority(level))
+                    return;
+
                 string localtime = json["@timestamp"].ToString("yyyy-MM-dd HH:mm:ss") + "(" + json["@timestamp"].ToString("ddd") + ")";
                 string title = System.Environment.NewLine + json.jsonMessage["monitor_name"] + ": " + json.jsonMessage["trigger_name"];
                 string hosts = GetHosts(json.jsonMessage["host_name"].Value);
-
-                var level = json.jsonMessage["severity"].ToString();
 
                 var sb = new StringBuilder();
                 StringBuilder message = sb.AppendLine(string.Format($"[{level}] {localtime}"))
@@ -56,6 +58,19 @@ namespace BLUECATS.ToastNotifier.Actors
                     ((NotificationLevel)Enum.Parse(typeof(NotificationLevel), GetSeverity(level), true), sendMsg)
                 );
             });
+        }
+
+        private bool CheckAuthority(string level)
+        {
+            var authority = AkkaHelper.ReadConfigurationFromHoconFile(Assembly.GetExecutingAssembly(), "conf")
+                            .WithFallback(ConfigurationFactory
+                            .FromResource<ConsumerSettings<object, object>>("Akka.Streams.Kafka.reference.conf"))
+                            .GetInt("ui.notification.authority-level");
+
+            if (authority < Int32.Parse(level))
+                return false;
+
+            return true;
         }
 
         private string GetHosts(string value)
