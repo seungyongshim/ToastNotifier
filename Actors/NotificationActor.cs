@@ -39,7 +39,22 @@ namespace BLUECATS.ToastNotifier.Actors
                         notifier.ShowWarning(msg);
                         break;
                     case NotificationLevel.Error:
-                        notifier.ShowCustomMessage(msg);
+                        notifier.ShowCustomMessage(msg, 9);
+                        break;
+                    case NotificationLevel.Alert_Level1:
+                        notifier.ShowCustomMessage(msg, 1);
+                        break;
+                    case NotificationLevel.Alert_Level2:
+                        notifier.ShowCustomMessage(msg, 2);
+                        break;
+                    case NotificationLevel.Alert_Level3:
+                        notifier.ShowCustomMessage(msg, 3);
+                        break;
+                    case NotificationLevel.Alert_Level4:
+                        notifier.ShowCustomMessage(msg, 4);
+                        break;
+                    case NotificationLevel.Alert_Level5:
+                        notifier.ShowCustomMessage(msg, 5);
                         break;
                 }
                 

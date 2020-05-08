@@ -12,5 +12,10 @@ namespace BLUECATS.ToastNotifier
         Info,
         Warning,
         Error,
+        Alert_Level1,
+        Alert_Level2,
+        Alert_Level3,
+        Alert_Level4,
+        Alert_Level5
     }
 }

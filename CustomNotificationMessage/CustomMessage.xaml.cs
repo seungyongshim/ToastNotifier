@@ -29,7 +29,7 @@ namespace ToastNotifier.CustomNotificationMessage
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Visibility = Visibility.Hidden;
+            this.Visibility = Visibility.Collapsed;
         }
     }
 }

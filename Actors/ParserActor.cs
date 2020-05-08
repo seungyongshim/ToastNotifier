@@ -70,19 +70,19 @@ namespace BLUECATS.ToastNotifier.Actors
             switch (severtityLevel)
             {
                 case "1":
-                    severity = NotificationLevel.Debug.ToString();
+                    severity = NotificationLevel.Alert_Level1.ToString();
                     break;
                 case "2":
-                    severity = NotificationLevel.Info.ToString();
+                    severity = NotificationLevel.Alert_Level2.ToString();
                     break;
                 case "3":
-                    severity = NotificationLevel.Warning.ToString();
+                    severity = NotificationLevel.Alert_Level3.ToString();
                     break;
                 case "4":
-                    severity = NotificationLevel.Error.ToString();
+                    severity = NotificationLevel.Alert_Level4.ToString();
                     break;
                 case "5":
-                    severity = NotificationLevel.Error.ToString();
+                    severity = NotificationLevel.Alert_Level5.ToString();
                     break;
                 default:
                     severity = NotificationLevel.Error.ToString();

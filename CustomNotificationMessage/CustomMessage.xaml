@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:ToastNotifier.CustomNotificationMessage"
              xmlns:core="clr-namespace:ToastNotifications.Core;assembly=ToastNotifications"
              mc:Ignorable="d" d:DesignWidth="250">
-    <Border x:Name="ContentWrapper" Style="{DynamicResource NotificationBorder}" Background="{DynamicResource WarningColorBrush}">
+    <Border x:Name="ContentWrapper" Style="{DynamicResource NotificationBorder}" Background="{Binding Background}">
         <Grid x:Name="ContentContainer">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="25" />

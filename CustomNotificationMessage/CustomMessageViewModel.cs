@@ -15,9 +15,38 @@ namespace ToastNotifier.CustomNotificationMessage
 
         public override NotificationDisplayPart DisplayPart => _displayPart ?? (_displayPart = new CustomMessage(this));
 
-        public CustomMessageViewModel(string message, MessageOptions messageOptions) : base(message, messageOptions)
+        public CustomMessageViewModel(string message, int level, MessageOptions messageOptions) : base(message, messageOptions)
         {
             Message = message;
+            Background = GetBackgroundColor(level);
+        }
+
+        private string GetBackgroundColor(int level)
+        {
+            var color = string.Empty;
+            switch (level) 
+            {
+                case 1:
+                    color = "Red";
+                    break;
+                case 2:
+                    color = "Orange";
+                    break;
+                case 3:
+                    color = "Green";
+                    break;
+                case 4:
+                    color = "DarkBlue";
+                    break;
+                case 5:
+                    color = "Purple";
+                    break;
+                case 9:
+                    color = "Gray";
+                    break;
+            }
+
+            return color;
         }
 
         #region binding properties
@@ -31,6 +60,21 @@ namespace ToastNotifier.CustomNotificationMessage
             set
             {
                 _message = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _background;
+
+        public string Background
+        {
+            get
+            {
+                return _background;
+            }
+            set
+            {
+                _background = value;
                 OnPropertyChanged();
             }
         }

@@ -12,9 +12,10 @@ namespace ToastNotifier.CustomNotificationMessage
     {
         public static void ShowCustomMessage(this Notifier notifier,
             string message,
+            int level,
             MessageOptions messageOptions = null)
         {
-            notifier.Notify(() => new CustomMessageViewModel(message, messageOptions));
+            notifier.Notify(() => new CustomMessageViewModel(message, level, messageOptions));
         }
     }
 }
