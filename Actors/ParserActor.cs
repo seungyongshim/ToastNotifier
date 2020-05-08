@@ -41,8 +41,10 @@ namespace BLUECATS.ToastNotifier.Actors
                 string title = System.Environment.NewLine + json.jsonMessage["monitor_name"] + ": " + json.jsonMessage["trigger_name"];
                 string hosts = GetHosts(json.jsonMessage["host_name"].Value);
 
+                var level = json.jsonMessage["severity"].ToString();
+
                 var sb = new StringBuilder();
-                StringBuilder message = sb.AppendLine(string.Format($"{localtime}"))
+                StringBuilder message = sb.AppendLine(string.Format($"[{level}] {localtime}"))
                     .AppendLine(title)
                     .AppendLine(hosts);
 
@@ -51,7 +53,7 @@ namespace BLUECATS.ToastNotifier.Actors
                     sendMsg = string.Concat(message.ToString().Remove(msgLength), "...");
 
                 notificationActor.Tell(
-                    ((NotificationLevel)Enum.Parse(typeof(NotificationLevel), GetSeverity(json.jsonMessage["severity"].ToString()), true), sendMsg)
+                    ((NotificationLevel)Enum.Parse(typeof(NotificationLevel), GetSeverity(level), true), sendMsg)
                 );
             });
         }
