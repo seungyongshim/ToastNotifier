@@ -51,6 +51,17 @@ namespace BLUECATS.ToastNotifier
 
             try
             {
+                var authority = AkkaHelper.ReadConfigurationFromHoconFile(Assembly.GetExecutingAssembly(), "conf")
+                    .WithFallback(ConfigurationFactory
+                    .FromResource<ConsumerSettings<object, object>>("Akka.Streams.Kafka.reference.conf"))
+                    .GetInt("ui.notification.authority-level");
+
+                if (authority < 1 || authority > 5) {
+                    MessageBox.Show("authority-level은 1~5까지 지정할 수 있습니다.", "Error");
+                    Shutdown();
+                    return;
+                }
+
                 var assembly = Assembly.GetExecutingAssembly();
                 var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
                 _version = fileVersionInfo.ProductVersion;
