@@ -42,8 +42,8 @@ namespace BLUECATS.ToastNotifier.Actors
                 if (!CheckAuthority(level))
                     return;
 
-                string localtime = json["@timestamp"].ToString("yyyy-MM-dd HH:mm:ss") + "(" + json["@timestamp"].ToString("ddd") + ")";
-                string alertInfo = System.Environment.NewLine + json.jsonMessage["monitor_name"] + ": " + json.jsonMessage["trigger_name"];
+                string localtime = json["@timestamp"].ToString("yyyy-MM-dd HH:mm:ss.ff") + "(" + json["@timestamp"].ToString("ddd") + ")";
+                string alertInfo = System.Environment.NewLine + json.jsonMessage["monitor_name"] + " : " + json.jsonMessage["trigger_name"];
                 string hosts = GetHosts(json.jsonMessage["host_name"].Value);
 
                 var title = string.Format($"[{level}] {localtime}");
