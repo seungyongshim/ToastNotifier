@@ -72,7 +72,7 @@ namespace BLUECATS.ToastNotifier.Actors
                 BecomeStacked(Delaying);
             });
 
-            Receive<string>(m => notifier.ShowCustomMessage(m, 9));
+            Receive<string>(m => notifier.ShowCustomMessage(new NotificationMessage() { Message=m }, 9));
         }
 
         private void Delaying()
