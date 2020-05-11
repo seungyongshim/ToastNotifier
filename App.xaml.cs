@@ -55,8 +55,6 @@ namespace BLUECATS.ToastNotifier
                 var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
                 _version = fileVersionInfo.ProductVersion;
 
-
-
                 var config = AkkaHelper.ReadConfigurationFromHoconFile(Assembly.GetExecutingAssembly(), "conf")
                     .WithFallback(ConfigurationFactory.FromResource<ConsumerSettings<object, object>>("Akka.Streams.Kafka.reference.conf"));
 
@@ -68,7 +66,8 @@ namespace BLUECATS.ToastNotifier
 
                 notificationActor = system.ActorOf(NotificationActor.Props(Notifier), nameof(NotificationActor));
                 var parserActor = system.ActorOf(ParserActor.Props(notificationActor), nameof(ParserActor));
-
+                var eventSubscribeActor = system.ActorOf(EventSubscribeActor.Props(notificationActor), nameof(EventSubscribeActor));
+                system.EventStream.Subscribe(eventSubscribeActor, typeof(Akka.Event.Error));
 
                 var bootStrapServers = GetBootStrapServers(config);
 
@@ -91,6 +90,7 @@ namespace BLUECATS.ToastNotifier
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString());
+                Current.Shutdown();
             }
 
             base.OnStartup(e);
