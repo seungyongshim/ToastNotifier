@@ -11,11 +11,11 @@ namespace ToastNotifier.CustomNotificationMessage
     public static class CustomMessageExtensions
     {
         public static void ShowCustomMessage(this Notifier notifier,
-            string message,
+            NotificationMessage message,
             int level,
             MessageOptions messageOptions = null)
         {
-            notifier.Notify(() => new CustomMessageViewModel(message, level, messageOptions));
+            notifier.Notify(() => new CustomMessageViewModel(message.Title, message.Message, level, messageOptions));
         }
     }
 }

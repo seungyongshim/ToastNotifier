@@ -38,6 +38,17 @@ namespace BLUECATS.ToastNotifier.Actors
                     case NotificationLevel.Warning:
                         notifier.ShowWarning(msg);
                         break;
+                }
+                
+                BecomeStacked(Delaying);
+            });
+
+            Receive<(NotificationLevel, NotificationMessage)>(_ =>
+            {
+                var (lv, msg) = _;
+
+                switch (lv)
+                {
                     case NotificationLevel.Error:
                         notifier.ShowCustomMessage(msg, 9);
                         break;
@@ -57,11 +68,11 @@ namespace BLUECATS.ToastNotifier.Actors
                         notifier.ShowCustomMessage(msg, 5);
                         break;
                 }
-                
+
                 BecomeStacked(Delaying);
             });
 
-            Receive<string>(m => notifier.ShowCustomMessage(m, 9));
+            Receive<string>(m => notifier.ShowCustomMessage(new NotificationMessage() { Message=m }, 9));
         }
 
         private void Delaying()

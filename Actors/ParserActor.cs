@@ -13,6 +13,7 @@ using System.Reflection;
 using Akka.Configuration;
 using Akka.Streams.Kafka.Settings;
 using System.Text.RegularExpressions;
+using ToastNotifier.CustomNotificationMessage;
 
 namespace BLUECATS.ToastNotifier.Actors
 {
@@ -42,20 +43,18 @@ namespace BLUECATS.ToastNotifier.Actors
                     return;
 
                 string localtime = json["@timestamp"].ToString("yyyy-MM-dd HH:mm:ss") + "(" + json["@timestamp"].ToString("ddd") + ")";
-                string title = System.Environment.NewLine + json.jsonMessage["monitor_name"] + ": " + json.jsonMessage["trigger_name"];
+                string alertInfo = System.Environment.NewLine + json.jsonMessage["monitor_name"] + ": " + json.jsonMessage["trigger_name"];
                 string hosts = GetHosts(json.jsonMessage["host_name"].Value);
 
-                var sb = new StringBuilder();
-                StringBuilder message = sb.AppendLine(string.Format($"[{level}] {localtime}"))
-                    .AppendLine(title)
-                    .AppendLine(hosts);
+                var title = string.Format($"[{level}] {localtime}");
+                var message = new StringBuilder().AppendLine(alertInfo).AppendLine(hosts).ToString();
 
-                string sendMsg = message.ToString();
-                if (sendMsg.Length > msgLength)
-                    sendMsg = string.Concat(message.ToString().Remove(msgLength), "...");
+                if (message.Length > msgLength)
+                    message = string.Concat(message.ToString().Remove(msgLength), "...");
 
+                var content = new NotificationMessage() { Title = title, Message = message };
                 notificationActor.Tell(
-                    ((NotificationLevel)Enum.Parse(typeof(NotificationLevel), GetSeverity(level), true), sendMsg)
+                    ((NotificationLevel)Enum.Parse(typeof(NotificationLevel), GetSeverity(level), true), content)
                 );
             });
         }
@@ -84,6 +83,7 @@ namespace BLUECATS.ToastNotifier.Actors
         private string GetSeverity(string severtityLevel)
         {
             var severity = string.Empty;
+
             switch (severtityLevel)
             {
                 case "1":
