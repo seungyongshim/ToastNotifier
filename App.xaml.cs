@@ -51,17 +51,6 @@ namespace BLUECATS.ToastNotifier
 
             try
             {
-                var authority = AkkaHelper.ReadConfigurationFromHoconFile(Assembly.GetExecutingAssembly(), "conf")
-                    .WithFallback(ConfigurationFactory
-                    .FromResource<ConsumerSettings<object, object>>("Akka.Streams.Kafka.reference.conf"))
-                    .GetInt("ui.notification.authority-level");
-
-                if (authority < 1 || authority > 5) {
-                    MessageBox.Show("authority-level은 1~5까지 지정할 수 있습니다.", "Error");
-                    Shutdown();
-                    return;
-                }
-
                 var assembly = Assembly.GetExecutingAssembly();
                 var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
                 _version = fileVersionInfo.ProductVersion;
@@ -70,6 +59,7 @@ namespace BLUECATS.ToastNotifier
                     .WithFallback(ConfigurationFactory.FromResource<ConsumerSettings<object, object>>("Akka.Streams.Kafka.reference.conf"));
 
 
+                ValidationAuthority(config);
                 CreateTrayIcon(config);
                 CreateNotifier(config);
 
@@ -100,7 +90,7 @@ namespace BLUECATS.ToastNotifier
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                MessageBox.Show(ex.ToString(), "Error");
                 Current.Shutdown();
             }
 
@@ -108,7 +98,15 @@ namespace BLUECATS.ToastNotifier
         }
 
         
+        private static void ValidationAuthority(Akka.Configuration.Config config)
+        {
+            var authority = config.GetInt("ui.notification.authority-level");
 
+            if (authority < 1 || authority > 5)
+            {
+                throw new Exception("authority-level은 1~5까지 지정할 수 있습니다.");
+            }
+        }
 
         private static string GetBootStrapServers(Akka.Configuration.Config config)
         {
