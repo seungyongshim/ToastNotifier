@@ -29,10 +29,12 @@ jobs:
         type ./ToastNotifier.csproj
     - name: Install dependencies
       run: dotnet restore
+    - name: Unit Test
+      run: dotnet test
     - name: Build
       run: dotnet build --configuration Release --no-restore          
     - name: Compress Release
-      run: Compress-Archive -Path bin\Release\net472\* -DestinationPath net472.zip
+      run: Compress-Archive -Path ToastNotifier\bin\Release\net472\* -DestinationPath net472.zip
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1.0.2
       env:
