@@ -2,7 +2,7 @@ name: Push
 
 on:
   push:
-    branches: [ master ]
+    branches: [ master, AddTest ]
   pull_request:
     branches: [ master ]
 
@@ -24,6 +24,8 @@ jobs:
         get-childitem ./ -recurse -include *.csproj | ForEach-Object {(get-content -encoding utf8 $_.FullName) -replace '0.0.0.0', '0.0.0' | out-file -encoding utf8 $_.FullName}
     - name: Install dependencies
       run: dotnet restore
+    - name: Unit Test
+      run: dotnet test
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Upload artifact
@@ -32,4 +34,4 @@ jobs:
         # Artifact name
         name: ToastNotifier
         # Directory containing files to upload
-        path: bin\Release\net472
+        path: ToastNotifier\bin\Release\net472
