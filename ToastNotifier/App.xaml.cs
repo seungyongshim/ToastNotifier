@@ -18,6 +18,7 @@ using ToastNotifications.Position;
 using System.Linq;
 using System.Text;
 using Akka.Streams.Dsl;
+using static ToastNotifier.AkkaConfigHelper;
 
 namespace BLUECATS.ToastNotifier
 {
@@ -33,7 +34,7 @@ namespace BLUECATS.ToastNotifier
         public string GUID { get; set; }
 
         private Mutex _mtx;
-        private string _version;
+        public string VersionInfo { get; private set; }
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -53,13 +54,10 @@ namespace BLUECATS.ToastNotifier
             {
                 var assembly = Assembly.GetExecutingAssembly();
                 var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-                _version = fileVersionInfo.ProductVersion;
-
                 var config = AkkaHelper.ReadConfigurationFromHoconFile(Assembly.GetExecutingAssembly(), "conf")
                     .WithFallback(ConfigurationFactory.FromResource<ConsumerSettings<object, object>>("Akka.Streams.Kafka.reference.conf"));
 
-
-                ValidationAuthority(config);
+                VersionInfo = $"{fileVersionInfo.ProductVersion} [{GetValidatedAuthority(config)}]";
                 CreateTrayIcon(config);
                 CreateNotifier(config);
 
@@ -97,17 +95,6 @@ namespace BLUECATS.ToastNotifier
             base.OnStartup(e);
         }
 
-        
-        private static void ValidationAuthority(Akka.Configuration.Config config)
-        {
-            var authority = config.GetInt("ui.notification.authority-level");
-
-            if (authority < 1 || authority > 5)
-            {
-                throw new Exception("authority-level은 1~5까지 지정할 수 있습니다.");
-            }
-        }
-
         private static string GetBootStrapServers(Akka.Configuration.Config config)
         {
             return config.GetStringList("kafka.bootstrap-servers")
@@ -125,8 +112,7 @@ namespace BLUECATS.ToastNotifier
 
         private string GetGUID()
         {
-            Microsoft.Win32.RegistryKey mykey;
-            mykey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey("BLUECATS");
+            var mykey = Microsoft.Win32.Registry.CurrentUser.CreateSubKey("BLUECATS");
             var guid = mykey.GetValue("GUID", Guid.NewGuid());
             mykey.SetValue("GUID", guid);
             mykey.Close();
@@ -151,7 +137,7 @@ namespace BLUECATS.ToastNotifier
                     maximumNotificationCount: MaximumNotificationCount.FromCount(uiNotificationMax));
 
                 cfg.Dispatcher = Application.Current.Dispatcher;
-            });         
+            });
         }
 
         private void CreateTrayIcon(Akka.Configuration.Config config)
@@ -165,12 +151,7 @@ namespace BLUECATS.ToastNotifier
             NotifyIcon.ContextMenu = menu;
             NotifyIcon.Visible = true;
 
-            var authority = AkkaHelper.ReadConfigurationFromHoconFile(Assembly.GetExecutingAssembly(), "conf")
-                                        .WithFallback(ConfigurationFactory
-                                        .FromResource<ConsumerSettings<object, object>>("Akka.Streams.Kafka.reference.conf"))
-                                        .GetInt("ui.notification.authority-level");
-
-            menu.MenuItems.Add($"{_version} [{authority}]").Enabled = false;
+            menu.MenuItems.Add($"{VersionInfo}").Enabled = false;
 
             menu.MenuItems.Add(new System.Windows.Forms.MenuItem(@"&BLUE CATS",
                 onClick: (_, __) =>
@@ -184,7 +165,6 @@ namespace BLUECATS.ToastNotifier
             menu.MenuItems.Add(new System.Windows.Forms.MenuItem(@"&All Clear",
                 onClick: (_, __) =>
                 {
-                    //notificationActor.Tell(new ClearAll());
                     Notifier.ClearMessages(new ClearAll());
                 }));
 
@@ -195,7 +175,7 @@ namespace BLUECATS.ToastNotifier
                         Shutdown();
                     }));
 
-            
+
         }
     }
 }

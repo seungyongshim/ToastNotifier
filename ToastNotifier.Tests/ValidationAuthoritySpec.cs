@@ -18,11 +18,12 @@ namespace ToastNotifier.Tests
         {
             // arrange
             var config = ConfigurationFactory.ParseString($"ui.notification.authority-level={level}");
-            var validationAuthority = typeof(App).GetMethod("ValidationAuthority", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-            Action act = () => validationAuthority.Invoke(null, new []{config});
 
-            // act, assert
-            act.Should().NotThrow();
+            // act
+            var result = AkkaConfigHelper.GetValidatedAuthority(config);
+
+            // assert
+            result.Should().Be(level);
         }
 
         [Theory]
@@ -35,12 +36,11 @@ namespace ToastNotifier.Tests
         {
             // arrange
             var config = ConfigurationFactory.ParseString($"ui.notification.authority-level={level}");
-            var validationAuthority = typeof(App).GetMethod("ValidationAuthority", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-            Action act = () => validationAuthority.Invoke(null, new[] { config });
+
+            Action act = () => AkkaConfigHelper.GetValidatedAuthority(config);
 
             // act, assert
             act.Should().Throw<Exception>()
-                .WithInnerException<Exception>()
                 .WithMessage("authority-level은 1~5까지 지정할 수 있습니다.");
         }
     }
