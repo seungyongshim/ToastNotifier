@@ -1,5 +1,4 @@
-using System;
-using System.Globalization;
+ï»¿using System;
 using Akka.Configuration;
 using BLUECATS.ToastNotifier;
 using FluentAssertions;
@@ -34,7 +33,6 @@ namespace ToastNotifier.Tests
         [InlineData(9)]
         public void Should_Throw_Exception(int level)
         {
-            CultureInfo.CurrentCulture = new CultureInfo("ko-KR", false);
             // arrange
             var config = ConfigurationFactory.ParseString($"ui.notification.authority-level={level}");
             var validationAuthority = typeof(App).GetMethod("ValidationAuthority", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
@@ -43,7 +41,7 @@ namespace ToastNotifier.Tests
             // act, assert
             act.Should().Throw<Exception>()
                 .WithInnerException<Exception>()
-                .WithMessage("authority-levelÀº 1~5±îÁö ÁöÁ¤ÇÒ ¼ö ÀÖ½À´Ï´Ù.");
+                .WithMessage("authority-levelì€ 1~5ê¹Œì§€ ì§€ì •í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.");
         }
     }
 }
