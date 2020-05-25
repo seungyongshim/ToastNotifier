@@ -26,7 +26,7 @@ jobs:
         echo $env:TAG_NAME
         echo ($env:TAG_NAME -replace 'refs/tags/v', '')
         get-childitem ./ -recurse -include *.csproj | ForEach-Object {(get-content -encoding utf8 $_.FullName) -replace '0.0.0.0', ($env:TAG_NAME -replace 'refs/tags/v', '') | out-file -encoding utf8 $_.FullName}
-        type ./ToastNotifier.csproj
+        get-childitem ./ -recurse -include *.csproj | Get-Content
     - name: Install dependencies
       run: dotnet restore
     - name: Unit Test
